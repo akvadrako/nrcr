@@ -17,6 +17,14 @@ elem = browser.find_elements_by_css_selector('tr.participation td')
 # browser.find_elements_by_css_selector('tr.participation td:not(.disabled)')[1:][0].click()
 # browser.find_element_by_id('option0').is_selected()
 
+for event in browser.find_elements_by_css_selector('tr.participation td:not(.disabled)')[1:]:
+    option_list.append(event)
+
+# browser.find_elements_by_css_selector('tr.participation td:not(.disabled)')[1:][0].get_attribute("title")
+for event in option_list:
+    print(event.get_attribute("title"))
+
+print("pause")
 # elem.click()
 
 
