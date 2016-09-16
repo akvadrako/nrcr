@@ -5,10 +5,20 @@ from datetime import datetime
 
 HTTP_PAGE = "http://doodle.com/poll/sz94cavn8r4657d2"
 #HTTP_PAGE = "http://doodle.com/poll/45apuevsy5k9a3c28p7kk7km/admin"
-prefered_time = datetime.strptime('10:20 AM', '%H:%M %p')
-min_delt = 0.0
-
+prefered_time = datetime.strptime('10:00 AM', '%H:%M %p')
 option_list = []
+
+def get_option(option_list):
+    min_delta = 86400.0  # seconds/day
+    for option in option_list:
+        time_raw = (option.get_attribute("title"))
+        time_reg = re.match(r"(.*?)(\d+:\d+ (A|P)M)", time_raw)
+        selected_time = datetime.strptime(time_reg.group(2), '%H:%M %p')
+        time_delta = abs((selected_time - prefered_time).total_seconds())
+        if time_delta < min_delta:
+            min_delta = time_delta
+            my_option = option
+    return my_option
 
 browser = webdriver.Firefox()
 browser.get(HTTP_PAGE)
@@ -23,15 +33,8 @@ elem = browser.find_elements_by_css_selector('tr.participation td')
 for event in browser.find_elements_by_css_selector('tr.participation td:not(.enabled)')[1:]:
     option_list.append(event)
 
+option = get_option(option_list)
 # browser.find_elements_by_css_selector('tr.participation td:not(.disabled)')[1:][0].get_attribute("title")
-for event in option_list:
-    option = (event.get_attribute("title"))
-    # regex = re.compile(r'\d+:\d+')
-    my_option = re.match(r"(.*?)(\d+:\d+ (A|P)M)", option)
-    date = datetime.strptime(my_option.group(2), '%H:%M %p')
-    delt= abs((date - prefered_time).total_seconds())
-    print(delt)
-
 print("pause")
 # elem.click()
 
