@@ -10,7 +10,6 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 HTTP_PAGE = "http://doodle.com/poll/45apuevsy5k9a3c28p7kk7km/admin"
 prefered_time = datetime.strptime('10:00 AM', '%H:%M %p')
 my_name = 'xinyue'
-my_name = 'hello'
 option_list = []
 
 def get_option(option_list):
@@ -46,7 +45,6 @@ except NoSuchElementException:
 event_list = browser.find_elements_by_css_selector('tr.participation.yesNo.partMyself td:not(.disabled)')
 
 for event in event_list[1:]:
-#for event in browser.find_elements_by_css_selector('tr.participation.yesNo.partMyself td.disabled')[1:]:
     option_list.append(event)
 
 if option_list:
