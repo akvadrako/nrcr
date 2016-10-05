@@ -13,11 +13,10 @@ config.read('config.ini')
 username = config['default']['username']
 email = config['default']['email']
 prefered_time = config['default']['prefered_time']
+http_page = config['default']['url']
 
 #HTTP_PAGE = "http://doodle.com/poll/sz94cavn8r4657d2"
-HTTP_PAGE = "http://doodle.com/poll/45apuevsy5k9a3c28p7kk7km/admin"
-prefered_time = datetime.strptime('10:00 AM', '%H:%M %p')
-my_name = 'xinyue'
+option_time = datetime.strptime(prefered_time, '%H:%M %p')
 option_list = []
 
 def get_option(option_list):
@@ -26,14 +25,14 @@ def get_option(option_list):
         time_raw = (option.get_attribute("title"))
         time_reg = re.match(r"(.*?)(\d+:\d+ (A|P)M)", time_raw)
         selected_time = datetime.strptime(time_reg.group(2), '%H:%M %p')
-        time_delta = abs((selected_time - prefered_time).total_seconds())
+        time_delta = abs((selected_time - option_time).total_seconds())
         if time_delta < min_delta:
             min_delta = time_delta
             my_option = option
     return my_option
 
 browser = webdriver.Firefox()
-browser.get(HTTP_PAGE)
+browser.get(http_page)
 browser.maximize_window()
 try:
     elem = WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tr.header.date.month th.asep")))
@@ -43,7 +42,7 @@ except TimeoutException:
 
 #check the first instance of existing name
 try:
-    existing_name = browser.find_element(By.XPATH, '//div[contains(@class, "pname") and contains(@title, "%s")]' % my_name)
+    existing_name = browser.find_element(By.XPATH, '//div[contains(@class, "pname") and contains(@title, "%s")]' % username)
     print("already registered")
     browser.quit()
     exit(0)
@@ -58,7 +57,7 @@ for event in event_list[1:]:
 if option_list:
     pname_list = browser.find_elements_by_id('pname')
     if pname_list:
-        pname_list[0].send_keys(my_name)
+        pname_list[0].send_keys(username)
         option = get_option(option_list)
         option.click()
         button_list = browser.find_elements_by_id('save')
