@@ -1,11 +1,15 @@
-# http://doodle.com/poll/sz94cavn8r4657d2
 from selenium import webdriver
 import re
 from datetime import datetime
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 
-HTTP_PAGE = "http://doodle.com/poll/sz94cavn8r4657d2"
-#HTTP_PAGE = "http://doodle.com/poll/45apuevsy5k9a3c28p7kk7km/admin"
+#HTTP_PAGE = "http://doodle.com/poll/sz94cavn8r4657d2"
+HTTP_PAGE = "http://doodle.com/poll/45apuevsy5k9a3c28p7kk7km/admin"
 prefered_time = datetime.strptime('10:00 AM', '%H:%M %p')
+my_name = 'xinyue'
 option_list = []
 
 def get_option(option_list):
@@ -22,23 +26,27 @@ def get_option(option_list):
 
 browser = webdriver.Firefox()
 browser.get(HTTP_PAGE)
+browser.maximize_window()
+try:
+    elem = WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tr.header.date.month th.asep")))
+    elem.click()
+except TimeoutException:
+    pass
 
-# elem = browser.find_element_by_id('box0')
-# elem = browser.find_elements_by_name('header time')
-elem = browser.find_elements_by_css_selector('tr.participation td')
+event_list = browser.find_elements_by_css_selector('tr.participation.yesNo.partMyself td:not(.disabled)')
 
-# browser.find_elements_by_css_selector('tr.participation td:not(.disabled)')[1:][0].click()
-# browser.find_element_by_id('option0').is_selected()
-
-for event in browser.find_elements_by_css_selector('tr.participation td:not(.enabled)')[1:]:
+for event in event_list[1:]:
+#for event in browser.find_elements_by_css_selector('tr.participation.yesNo.partMyself td.disabled')[1:]:
     option_list.append(event)
 
-option = get_option(option_list)
-# browser.find_elements_by_css_selector('tr.participation td:not(.disabled)')[1:][0].get_attribute("title")
-print("pause")
-# elem.click()
+if option_list:
+    pname_list = browser.find_elements_by_id('pname')
+    if pname_list:
+        pname_list[0].send_keys(my_name)
+        option = get_option(option_list)
+        option.click()
+        button_list = browser.find_elements_by_id('save')
+        if button_list:
+            button_list[0].click()
 
-
-
-
-
+browser.quit()
