@@ -4,12 +4,13 @@ from datetime import datetime
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 #HTTP_PAGE = "http://doodle.com/poll/sz94cavn8r4657d2"
 HTTP_PAGE = "http://doodle.com/poll/45apuevsy5k9a3c28p7kk7km/admin"
 prefered_time = datetime.strptime('10:00 AM', '%H:%M %p')
 my_name = 'xinyue'
+my_name = 'hello'
 option_list = []
 
 def get_option(option_list):
@@ -31,6 +32,15 @@ try:
     elem = WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tr.header.date.month th.asep")))
     elem.click()
 except TimeoutException:
+    pass
+
+#check the first instance of existing name
+try:
+    existing_name = browser.find_element(By.XPATH, '//div[contains(@class, "pname") and contains(@title, "%s")]' % my_name)
+    print("already registered")
+    browser.quit()
+    exit(0)
+except NoSuchElementException:
     pass
 
 event_list = browser.find_elements_by_css_selector('tr.participation.yesNo.partMyself td:not(.disabled)')
