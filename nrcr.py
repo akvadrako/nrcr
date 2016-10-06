@@ -35,9 +35,9 @@ def get_option(option_list):
 browser = webdriver.Firefox()
 #browser = webdriver.PhantomJS(executable_path=r'C:\Users\xinyue.zheng\AppData\Roaming\npm\node_modules\phantomjs\bin')
 browser.get(http_page)
-#browser.maximize_window()
+browser.maximize_window()
 try:
-    elem = WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tr.header.date.month th.asep")))
+    elem = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "tr.header.date.month th.asep")))
     elem.click()
 except TimeoutException:
     pass
@@ -57,13 +57,16 @@ for event in event_list[1:]:
     option_list.append(event)
 
 if option_list:
-    pname_list = browser.find_elements_by_id('pname')
-    if pname_list:
-        pname_list[0].send_keys(username)
+    try:
+        pname = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.ID, "pname")))
+        pname.send_keys(username)
+
         option = get_option(option_list)
         option.click()
-        button_list = browser.find_elements_by_id('save')
-        if button_list:
-            button_list[0].click()
+
+        button = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.ID, "save")))
+        button.click()
+    except NoSuchElementException:
+        pass
 
 browser.quit()
