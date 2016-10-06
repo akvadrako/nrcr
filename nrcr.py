@@ -2,6 +2,8 @@ import sys
 import configparser
 import re
 from datetime import datetime
+from email.mime.text import MIMEText
+import smtplib
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,12 +15,24 @@ config = configparser.ConfigParser()
 config.read_file(open(config_path))
 
 username = config.get('default', 'username')
-email = config.get('default', 'email')
+email_addr = config.get('default', 'email')
 prefered_time = config.get('default', 'prefered_time')
 http_page = config.get('default', 'url')
 
 option_time = datetime.strptime(prefered_time, '%H:%M %p')
 option_list = []
+
+def send_email():
+    msg = MIMEText('''
+        massage registered
+        Enjoy :)))
+        '''.format(browser.current_url))
+    msg['Subject'] = 'Massage Registered'
+    msg['From'] = email_addr
+    msg['To'] = email_addr
+    s = smtplib.SMTP('nlhfd-msg001.domain1.intra')
+    s.send_message(msg)
+    s.quit()
 
 def get_option(option_list):
     min_delta = 86400.0  # seconds/day
@@ -66,6 +80,7 @@ if option_list:
 
         button = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.ID, "save")))
         button.click()
+        send_email()
     except NoSuchElementException:
         pass
 
