@@ -1,3 +1,4 @@
+import sys
 import configparser
 import re
 from datetime import datetime
@@ -7,15 +8,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
+config_path = sys.argv[1]
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read_file(open(config_path))
 
 username = config['default']['username']
 email = config['default']['email']
 prefered_time = config['default']['prefered_time']
 http_page = config['default']['url']
 
-#HTTP_PAGE = "http://doodle.com/poll/sz94cavn8r4657d2"
 option_time = datetime.strptime(prefered_time, '%H:%M %p')
 option_list = []
 
@@ -32,6 +33,7 @@ def get_option(option_list):
     return my_option
 
 browser = webdriver.Firefox()
+#browser = webdriver.PhantomJS(executable_path=r'C:\Users\xinyue.zheng\AppData\Roaming\npm\node_modules\phantomjs\bin')
 browser.get(http_page)
 browser.maximize_window()
 try:
