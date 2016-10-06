@@ -12,10 +12,10 @@ config_path = sys.argv[1]
 config = configparser.ConfigParser()
 config.read_file(open(config_path))
 
-username = config['default']['username']
-email = config['default']['email']
-prefered_time = config['default']['prefered_time']
-http_page = config['default']['url']
+username = config.get('default', 'username')
+email = config.get('default', 'email')
+prefered_time = config.get('default', 'prefered_time')
+http_page = config.get('default', 'url')
 
 option_time = datetime.strptime(prefered_time, '%H:%M %p')
 option_list = []
@@ -35,7 +35,7 @@ def get_option(option_list):
 browser = webdriver.Firefox()
 #browser = webdriver.PhantomJS(executable_path=r'C:\Users\xinyue.zheng\AppData\Roaming\npm\node_modules\phantomjs\bin')
 browser.get(http_page)
-browser.maximize_window()
+#browser.maximize_window()
 try:
     elem = WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tr.header.date.month th.asep")))
     elem.click()
@@ -47,7 +47,7 @@ try:
     existing_name = browser.find_element(By.XPATH, '//div[contains(@class, "pname") and contains(@title, "%s")]' % username)
     print("already registered")
     browser.quit()
-    exit(0)
+    sys.exit(0)
 except NoSuchElementException:
     pass
 
